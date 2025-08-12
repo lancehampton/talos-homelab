@@ -1,0 +1,33 @@
+# Example values for Talos homelab
+
+cluster_name     = "talos-homelab"
+cluster_endpoint = "https://10.5.0.2:6443"
+
+node_data = {
+  controlplanes = {
+    "10.5.0.2" = {
+      install_disk = "/dev/sda"
+      # hostname     = "cp-1" # optional
+    }
+    "10.5.0.3" = {
+      install_disk = "/dev/sda"
+      # hostname     = "cp-2" # optional
+    }
+    "10.5.0.4" = {
+      install_disk = "/dev/sda"
+      # hostname     = "cp-3" # optional
+    }
+  }
+  workers = {
+    "10.5.0.5" = {
+      install_disk = "/dev/nvme0n1"
+      hostname     = "worker-1"
+    }
+    "10.5.0.6" = {
+      install_disk = "/dev/nvme0n1"
+      hostname     = "worker-2"
+    }
+  }
+}
+
+talos_version = "v1.10.6"
