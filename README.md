@@ -1,4 +1,3 @@
-
 # Talos Homelab
 
 A bare-metal Kubernetes homelab using [Talos Linux](https://www.talos.dev/docs/) for secure, immutable cluster management and OpenTofu for infrastructure as code.
@@ -20,32 +19,17 @@ This project provisions a Talos-based Kubernetes cluster on bare metal, using Op
 	 tofu apply
 	 ```
 
-
-4. Retrieve your `talosconfig` and `kubeconfig` from the outputs and write them to the recommended locations:
-
-	```sh
-	# Write talosconfig to ~/.talos/config
-	mkdir -p ~/.talos
-	tofu output -raw talosconfig > ~/.talos/config
-
-	# Write kubeconfig to ~/.kube/talos-config
-	mkdir -p ~/.kube
-	tofu output -raw kubeconfig > ~/.kube/talos-config
-	```
-
-> [!WARNING]
-> Do not commit sensitive files such as `kubeconfig` or `talosconfig` to version control.
-
 ## Directory Structure
 
 ```
 infrastructure/
-├── main.tf                  # Main OpenTofu configuration
-├── variables.tf             # Variable definitions and defaults
+├── cloudflare.tf            # Cloudflare resource configuration
 ├── outputs.tf               # Output values (e.g., kubeconfig)
-├── versions.tf              # Provider and OpenTofu version constraints
+├── providers.tf              # Provider and OpenTofu version constraints
+├── talos.tf                 # Talos resource configuration
 ├── terraform.tfvars.example # Example variable values for customization
 ├── terraform.tfvars         # User-specific variable values (not committed)
+├── variables.tf             # Variable definitions and defaults
 ├── templates/               # Talos config and patch templates
 └── files/                   # Additional files (e.g., config patches)
 ```

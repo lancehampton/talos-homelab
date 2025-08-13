@@ -5,7 +5,7 @@ data "talos_machine_configuration" "controlplane" {
   cluster_endpoint = var.cluster_endpoint
   machine_type     = "controlplane"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = "v1.10.6"
+  talos_version    = var.talos_version
 }
 
 data "talos_machine_configuration" "worker" {
@@ -13,13 +13,45 @@ data "talos_machine_configuration" "worker" {
   cluster_endpoint = var.cluster_endpoint
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
-  talos_version    = "v1.10.6"
+  talos_version    = var.talos_version
 }
 
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
   endpoints            = [for k, v in var.node_data.controlplanes : k]
+}
+
+# Declare the system extensions we want to include
+data "talos_image_factory_extensions_versions" "this" {
+  talos_version = var.talos_version
+  filters = {
+    names = [
+      "cloudflared",
+      "tailscale",
+    ]
+  }
+}
+
+# Get the schematic id that includes the desired extensions
+resource "talos_image_factory_schematic" "this" {
+  schematic = yamlencode(
+    {
+      customization = {
+        systemExtensions = {
+          officialExtensions = data.talos_image_factory_extensions_versions.this.extensions_info.*.name
+        }
+      }
+    }
+  )
+}
+
+# Get the image URL that includes the desired extensions
+data "talos_image_factory_urls" "this" {
+  talos_version = var.talos_version
+  schematic_id  = talos_image_factory_schematic.this.id
+  platform      = "metal"
+  architecture  = "amd64"
 }
 
 resource "talos_machine_configuration_apply" "controlplane" {
@@ -31,6 +63,9 @@ resource "talos_machine_configuration_apply" "controlplane" {
     templatefile("${path.module}/templates/install-disk-and-hostname.yaml.tmpl", {
       hostname     = each.value.hostname == null ? format("%s-cp-%s", var.cluster_name, index(keys(var.node_data.controlplanes), each.key)) : each.value.hostname
       install_disk = each.value.install_disk
+    }),
+    templatefile("${path.module}/templates/installer-image.yaml.tmpl", {
+      installer_url = data.talos_image_factory_urls.this.urls.installer
     }),
     file("${path.module}/files/cp-scheduling.yaml"),
   ]
@@ -45,7 +80,10 @@ resource "talos_machine_configuration_apply" "worker" {
     templatefile("${path.module}/templates/install-disk-and-hostname.yaml.tmpl", {
       hostname     = each.value.hostname == null ? format("%s-worker-%s", var.cluster_name, index(keys(var.node_data.workers), each.key)) : each.value.hostname
       install_disk = each.value.install_disk
-    })
+    }),
+    templatefile("${path.module}/templates/installer-image.yaml.tmpl", {
+      installer_url = data.talos_image_factory_urls.this.urls.installer
+    }),
   ]
 }
 

@@ -7,3 +7,7 @@ output "kubeconfig" {
   value     = talos_cluster_kubeconfig.this.kubeconfig_raw
   sensitive = true
 }
+
+output "schematic_id" {
+  value = talos_image_factory_schematic.this.id
+}

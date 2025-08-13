@@ -76,7 +76,7 @@ variable "cloudflare_api_token" {
 
 variable "r2_access_key_id" {
   type        = string
-  description = "The access key ID for the R2 bucket."
+  description = "The access key ID with for the R2 bucket."
 }
 
 variable "r2_secret_access_key" {

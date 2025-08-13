@@ -10,9 +10,8 @@ terraform {
     }
   }
   required_version = ">= 1.6.0"
-}
 
-terraform {
+  # https://developers.cloudflare.com/terraform/advanced-topics/remote-backend/
   backend "s3" {
     bucket                      = var.r2_bucket_name
     key                         = "talos/terraform.tfstate"
