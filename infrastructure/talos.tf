@@ -1,19 +1,52 @@
 resource "talos_machine_secrets" "this" {}
 
 data "talos_machine_configuration" "controlplane" {
+  for_each         = var.node_data.controlplanes
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
   machine_type     = "controlplane"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   talos_version    = var.talos_version
+  config_patches = [
+    file("${path.module}/files/cp-scheduling.yaml"),
+    templatefile("${path.module}/files/install-disk-and-hostname.yaml.tpl", {
+      hostname     = each.value.hostname == null ? format("%s-cp-%s", var.cluster_name, index(keys(var.node_data.controlplanes), each.key)) : each.value.hostname
+      install_disk = each.value.install_disk
+    }),
+    templatefile("${path.module}/files/installer-image.yaml.tpl", {
+      installer_url = data.talos_image_factory_urls.this.urls.installer
+    }),
+    templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
+      auth_key = var.tailscale_auth_key
+    }),
+    templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
+      tunnel_token = var.cloudflared_tunnel_token
+    }),
+  ]
 }
 
 data "talos_machine_configuration" "worker" {
+  for_each         = var.node_data.workers
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   talos_version    = var.talos_version
+  config_patches = [
+    templatefile("${path.module}/files/install-disk-and-hostname.yaml.tpl", {
+      hostname     = each.value.hostname == null ? format("%s-worker-%s", var.cluster_name, index(keys(var.node_data.workers), each.key)) : each.value.hostname
+      install_disk = each.value.install_disk
+    }),
+    templatefile("${path.module}/files/installer-image.yaml.tpl", {
+      installer_url = data.talos_image_factory_urls.this.urls.installer
+    }),
+    templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
+      auth_key = var.tailscale_auth_key
+    }),
+    templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
+      tunnel_token = var.cloudflared_tunnel_token
+    }),
+  ]
 }
 
 data "talos_client_configuration" "this" {
@@ -56,35 +89,16 @@ data "talos_image_factory_urls" "this" {
 
 resource "talos_machine_configuration_apply" "controlplane" {
   client_configuration        = talos_machine_secrets.this.client_configuration
-  machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
+  machine_configuration_input = data.talos_machine_configuration.controlplane[each.key].machine_configuration
   for_each                    = var.node_data.controlplanes
   node                        = each.key
-  config_patches = [
-    templatefile("${path.module}/templates/install-disk-and-hostname.yaml.tmpl", {
-      hostname     = each.value.hostname == null ? format("%s-cp-%s", var.cluster_name, index(keys(var.node_data.controlplanes), each.key)) : each.value.hostname
-      install_disk = each.value.install_disk
-    }),
-    templatefile("${path.module}/templates/installer-image.yaml.tmpl", {
-      installer_url = data.talos_image_factory_urls.this.urls.installer
-    }),
-    file("${path.module}/files/cp-scheduling.yaml"),
-  ]
 }
 
 resource "talos_machine_configuration_apply" "worker" {
   client_configuration        = talos_machine_secrets.this.client_configuration
-  machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker[each.key].machine_configuration
   for_each                    = var.node_data.workers
   node                        = each.key
-  config_patches = [
-    templatefile("${path.module}/templates/install-disk-and-hostname.yaml.tmpl", {
-      hostname     = each.value.hostname == null ? format("%s-worker-%s", var.cluster_name, index(keys(var.node_data.workers), each.key)) : each.value.hostname
-      install_disk = each.value.install_disk
-    }),
-    templatefile("${path.module}/templates/installer-image.yaml.tmpl", {
-      installer_url = data.talos_image_factory_urls.this.urls.installer
-    }),
-  ]
 }
 
 resource "talos_machine_bootstrap" "this" {
