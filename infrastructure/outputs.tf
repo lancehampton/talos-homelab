@@ -14,10 +14,10 @@ output "schematic_id" {
 
 output "tailscale_patch" {
   sensitive = true
-  value     = templatefile("${path.module}/templates/tailscale-config.yaml.tpl", { auth_key = var.tailscale_auth_key })
+  value     = templatefile("${path.module}/files/tailscale-config.yaml.tpl", { auth_key = var.tailscale_auth_key })
 }
 
 output "cloudflared_patch" {
   sensitive = true
-  value     = templatefile("${path.module}/templates/cloudflared-config.yaml.tpl", { token = var.cloudflared_tunnel_token })
+  value     = templatefile("${path.module}/files/cloudflared-config.yaml.tpl", { tunnel_token = var.cloudflared_tunnel_token })
 }

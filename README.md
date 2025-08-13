@@ -10,19 +10,14 @@ This project provisions a Talos-based Kubernetes cluster on bare metal, using Op
 
 1. Clone this repository.
 2. Copy and edit `infrastructure/terraform.tfvars.example` to `terraform.tfvars` with your environment details.
-3. Initialize and apply the OpenTofu configuration:
+3. Boot the Talos nodes using the `metal-amd64.iso` downloaded from the [image factory](https://factory.talos.dev/) or the [siderolabs/talos releases page](https://github.com/siderolabs/talos/releases)
+4. Initialize and apply the OpenTofu configuration:
 
 	 ```sh
 	 cd infrastructure
 	 tofu init
 	 tofu plan
 	 tofu apply
-	 ```
-4. Patch the system extension configurations for Tailscale and Cloudflared:
-
-	 ```sh
-	 tofu output -raw tailscale_patch | talosctl patch mc --mode=no-reboot --patch @-
-   tofu output -raw cloudflared_patch | talosctl patch mc --mode=no-reboot --patch @-
 	 ```
 
 ## Directory Structure
@@ -36,8 +31,7 @@ infrastructure/
 ├── terraform.tfvars.example # Example variable values for customization
 ├── terraform.tfvars         # User-specific variable values (not committed)
 ├── variables.tf             # Variable definitions and defaults
-├── templates/               # Talos config and patch templates
-└── files/                   # Additional files (e.g., config patches)
+└── files/                   # Talos config and patch templates
 ```
 
 ## Architecture
