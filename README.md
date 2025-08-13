@@ -18,6 +18,12 @@ This project provisions a Talos-based Kubernetes cluster on bare metal, using Op
 	 tofu plan
 	 tofu apply
 	 ```
+4. Patch the system extension configurations for Tailscale and Cloudflared:
+
+	 ```sh
+	 tofu output -raw tailscale_patch | talosctl patch mc --mode=no-reboot --patch @-
+   tofu output -raw cloudflared_patch | talosctl patch mc --mode=no-reboot --patch @-
+	 ```
 
 ## Directory Structure
 

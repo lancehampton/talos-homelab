@@ -65,6 +65,20 @@ variable "kubeconfig_path" {
   type        = string
 }
 
+# https://github.com/siderolabs/extensions/blob/main/network/cloudflared/README.md
+variable "cloudflared_tunnel_token" {
+  type        = string
+  description = "Cloudflared token for Talos system extension"
+  sensitive   = true
+}
+
+# https://github.com/siderolabs/extensions/blob/main/network/tailscale/README.md
+variable "tailscale_auth_key" {
+  type        = string
+  description = "Tailscale auth key for Talos system extension"
+  sensitive   = true
+}
+
 ###############
 # Cloudflare  #
 ###############
@@ -74,19 +88,19 @@ variable "cloudflare_api_token" {
   description = "Account API token for Cloudflare."
 }
 
+variable "r2_bucket_name" {
+  type        = string
+  description = "The name of the R2 bucket used for storing Terraform state files."
+}
+
 variable "r2_access_key_id" {
   type        = string
-  description = "The access key ID with for the R2 bucket."
+  description = "The access key ID for the R2 bucket."
 }
 
 variable "r2_secret_access_key" {
   type        = string
   description = "The secret access key for the R2 bucket."
-}
-
-variable "r2_bucket_name" {
-  type        = string
-  description = "The name of the R2 bucket used for storing Terraform state files."
 }
 
 variable "r2_endpoint" {
