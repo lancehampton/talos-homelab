@@ -3,8 +3,10 @@ kind: Application
 metadata:
   name: bootstrap
   namespace: argocd
+  annotations:
+    homelab.io/description: root app-of-apps
 spec:
-  project: default
+  project: homelab
   source:
     repoURL: https://github.com/lancehampton/talos-homelab.git
     targetRevision: main
