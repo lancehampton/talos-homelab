@@ -8,13 +8,13 @@ spec:
   sourceRepos:
     - https://github.com/lancehampton/talos-homelab.git
   destinations:
-    - namespace: '*'
+    - namespace: "*"
       server: https://kubernetes.default.svc
   clusterResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"
   namespaceResourceWhitelist:
-    - group: '*'
-      kind: '*'
+    - group: "*"
+      kind: "*"
   orphanedResources:
     warn: true
