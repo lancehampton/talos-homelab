@@ -1,16 +1,17 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: bootstrap
+  name: argocd
   namespace: argocd
 spec:
-  project: default
+  project: homelab
   source:
     repoURL: https://github.com/lancehampton/talos-homelab.git
     targetRevision: main
-    path: cluster/app-of-apps
+    path: cluster/argocd/helm
   destination:
     server: https://kubernetes.default.svc
+    namespace: argocd
   syncPolicy:
     automated:
       prune: true

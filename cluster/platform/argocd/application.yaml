@@ -1,22 +1,4 @@
-apiVersion: argoproj.io/v1alpha1
-kind: Application
-metadata:
-  name: argocd
-  namespace: argocd
-  annotations:
-    argocd.argoproj.io/sync-wave: "0"
-spec:
-  project: homelab
-  source:
-    repoURL: https://github.com/lancehampton/talos-homelab.git
-    targetRevision: main
-    path: cluster/argocd/helm
-  destination:
-    server: https://kubernetes.default.svc
-    namespace: argocd
-  syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
+## Deprecated duplicate
+# This file is no longer used. The authoritative Argo CD Application
+# manifest lives at: cluster/apps/argocd.yaml
+# Safe to delete this directory (`cluster/platform`) from git.
