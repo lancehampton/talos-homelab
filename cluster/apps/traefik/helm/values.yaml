@@ -10,9 +10,14 @@ traefik:
         nodePort: 32080
       websecure:
         nodePort: 32443
+  # Enable HTTPS entrypoint and redirect HTTP -> HTTPS using new v34+ syntax
   ports:
-    web:
-      redirectTo: websecure
+    websecure:
+      tls:
+        enabled: true
+  additionalArguments:
+    - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+    - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
   ingressRoute:
     dashboard:
       enabled: true
