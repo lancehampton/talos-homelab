@@ -1,7 +1,7 @@
-resource "talos_machine_secrets" "this" {}
+resource "talos_machine_secrets" "this" { talos_version = var.talos_version }
 
 data "talos_machine_configuration" "controlplane" {
-  for_each         = var.node_data.controlplanes
+  for_each         = var.controlplane_nodes
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
   machine_type     = "controlplane"
@@ -9,11 +9,14 @@ data "talos_machine_configuration" "controlplane" {
   talos_version    = var.talos_version
   config_patches = [
     file("${path.module}/files/cp-scheduling.yaml"),
-    templatefile("${path.module}/files/install-disk-and-hostname.yaml.tpl", {
-      hostname     = each.value.hostname == null ? format("%s-cp-%s", var.cluster_name, index(keys(var.node_data.controlplanes), each.key)) : each.value.hostname
-      install_disk = each.value.install_disk
-    }),
-    templatefile("${path.module}/files/installer-image.yaml.tpl", {
+    file("${path.module}/files/cp-networking.yaml"),
+    templatefile("${path.module}/files/common.yaml.tpl", {
+      hostname      = each.key
+      node_ip       = each.value.node_ip
+      gateway       = var.gateway
+      netmask       = var.netmask
+      interface     = each.value.interface
+      install_disk  = each.value.install_disk
       installer_url = data.talos_image_factory_urls.this.urls.installer
     }),
     templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
@@ -25,19 +28,22 @@ data "talos_machine_configuration" "controlplane" {
   ]
 }
 
+# TODO: consider separate template for worker nodes
 data "talos_machine_configuration" "worker" {
-  for_each         = var.node_data.workers
+  for_each         = var.worker_nodes
   cluster_name     = var.cluster_name
   cluster_endpoint = var.cluster_endpoint
   machine_type     = "worker"
   machine_secrets  = talos_machine_secrets.this.machine_secrets
   talos_version    = var.talos_version
   config_patches = [
-    templatefile("${path.module}/files/install-disk-and-hostname.yaml.tpl", {
-      hostname     = each.value.hostname == null ? format("%s-worker-%s", var.cluster_name, index(keys(var.node_data.workers), each.key)) : each.value.hostname
-      install_disk = each.value.install_disk
-    }),
-    templatefile("${path.module}/files/installer-image.yaml.tpl", {
+    templatefile("${path.module}/files/common.yaml.tpl", {
+      hostname      = each.key
+      node_ip       = each.value.node_ip
+      gateway       = each.value.gateway
+      netmask       = var.netmask
+      interface     = each.value.interface
+      install_disk  = each.value.install_disk
       installer_url = data.talos_image_factory_urls.this.urls.installer
     }),
     templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
@@ -52,7 +58,7 @@ data "talos_machine_configuration" "worker" {
 data "talos_client_configuration" "this" {
   cluster_name         = var.cluster_name
   client_configuration = talos_machine_secrets.this.client_configuration
-  endpoints            = [for k, v in var.node_data.controlplanes : k]
+  endpoints            = [for k, v in var.controlplane_nodes : v.node_ip]
 }
 
 # Declare the system extensions we want to include
@@ -88,30 +94,34 @@ data "talos_image_factory_urls" "this" {
 }
 
 resource "talos_machine_configuration_apply" "controlplane" {
+  for_each                    = var.controlplane_nodes
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.controlplane[each.key].machine_configuration
-  for_each                    = var.node_data.controlplanes
   node                        = each.key
+  endpoint                    = each.value.node_ip
 }
 
 resource "talos_machine_configuration_apply" "worker" {
+  for_each                    = var.worker_nodes
   client_configuration        = talos_machine_secrets.this.client_configuration
   machine_configuration_input = data.talos_machine_configuration.worker[each.key].machine_configuration
-  for_each                    = var.node_data.workers
   node                        = each.key
+  endpoint                    = each.value.node_ip
 }
 
 resource "talos_machine_bootstrap" "this" {
   depends_on = [talos_machine_configuration_apply.controlplane]
 
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = [for k, v in var.node_data.controlplanes : k][0]
+  node                 = [for k, v in var.controlplane_nodes : k][0]
+  endpoint             = [for k, v in var.controlplane_nodes : v.node_ip][0]
 }
 
 resource "talos_cluster_kubeconfig" "this" {
   depends_on           = [talos_machine_bootstrap.this]
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = [for k, v in var.node_data.controlplanes : k][0]
+  node                 = [for k, v in var.controlplane_nodes : k][0]
+  endpoint             = [for k, v in var.controlplane_nodes : v.node_ip][0]
 }
 
 resource "local_file" "talosconfig" {

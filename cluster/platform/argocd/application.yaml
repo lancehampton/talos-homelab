@@ -1,4 +1,0 @@
-## Deprecated duplicate
-# This file is no longer used. The authoritative Argo CD Application
-# manifest lives at: cluster/apps/argocd.yaml
-# Safe to delete this directory (`cluster/platform`) from git.

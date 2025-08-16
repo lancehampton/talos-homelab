@@ -12,40 +12,57 @@ variable "cluster_endpoint" {
   type        = string
 }
 
-variable "node_data" {
-  description = "A map of node data"
-  type = object({
-    controlplanes = map(object({
-      install_disk = string
-      hostname     = optional(string)
-    }))
-    workers = map(object({
-      install_disk = string
-      hostname     = optional(string)
-    }))
-  })
+variable "gateway" {
+  description = "The default gateway for the nodes"
+  type        = string
+}
+
+variable "netmask" {
+  description = "The default netmask for the nodes"
+  type        = string
+}
+
+variable "controlplane_nodes" {
+  description = "Map of control plane hostnames to their parameters"
+  type = map(object({
+    node_ip      = string
+    interface    = optional(string)
+    install_disk = string
+  }))
   default = {
-    controlplanes = {
-      "10.5.0.2" = {
-        install_disk = "/dev/sda"
-      },
-      "10.5.0.3" = {
-        install_disk = "/dev/sda"
-      },
-      "10.5.0.4" = {
-        install_disk = "/dev/sda"
-      }
+    "thor-cp-01" = {
+      node_ip      = "192.168.50.200"
+      install_disk = "/dev/nvme0n1"
     }
-    workers = {
-      "10.5.0.5" = {
-        install_disk = "/dev/nvme0n1"
-        hostname     = "worker-1"
-      },
-      "10.5.0.6" = {
-        install_disk = "/dev/nvme0n1"
-        hostname     = "worker-2"
-      }
+    "loki-cp-02" = {
+      node_ip      = "192.168.50.201"
+      install_disk = "/dev/nvme0n1"
     }
+    "odin-cp-03" = {
+      node_ip      = "192.168.50.202"
+      install_disk = "/dev/nvme0n1"
+    }
+    # Add more control plane nodes here as needed
+  }
+}
+
+variable "worker_nodes" {
+  description = "Map of worker hostnames to their parameters"
+  type = map(object({
+    node_ip      = string
+    interface    = optional(string)
+    install_disk = string
+  }))
+  default = {
+    "sif-w-01" = {
+      node_ip      = "192.168.50.210"
+      install_disk = "/dev/nvme0n1"
+    }
+    "valkyrie-w-02" = {
+      node_ip      = "192.168.50.211"
+      install_disk = "/dev/nvme0n1"
+    }
+    # Add more worker nodes here
   }
 }
 

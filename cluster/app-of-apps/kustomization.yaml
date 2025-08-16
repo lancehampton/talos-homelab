@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - bootstrap.yaml # self-managed
   - ../projects/homelab-project.yaml
-  - ../apps/argocd.yaml
+  - ../apps/argocd/application.yaml

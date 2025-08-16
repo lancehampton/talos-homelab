@@ -50,3 +50,10 @@ join.yaml
 worker.yaml
 talosconfig
 **/kubeconfig
+
+# Helm build artifacts / dependencies
+**/charts/*.tgz
+**/charts/*.lock
+*.tgz
+# Keep Chart.lock (explicit) but ignore vendored chart archives
+!**/Chart.lock
