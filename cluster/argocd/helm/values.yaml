@@ -1,6 +1,8 @@
 server:
   service:
     type: NodePort # no Traefik yet
+    nodePortHttp: 30080
+    nodePortHttps: 30443
 configs:
   params:
     server.insecure: true
