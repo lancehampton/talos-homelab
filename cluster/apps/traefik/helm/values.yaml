@@ -3,13 +3,11 @@ traefik:
     replicas: 1
   service:
     type: NodePort
-    spec:
-      externalTrafficPolicy: Cluster
-    ports:
-      web:
-        nodePort: 32080
-      websecure:
-        nodePort: 32443
+    externalTrafficPolicy: Cluster
+    # Correct way to pin NodePorts in traefik chart v37+
+    nodePorts:
+      web: 32080
+      websecure: 32443
   # Enable HTTPS entrypoint and redirect HTTP -> HTTPS using new v34+ syntax
   ports:
     websecure:
