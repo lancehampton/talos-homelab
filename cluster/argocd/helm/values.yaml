@@ -1,0 +1,6 @@
+server:
+  service:
+    type: NodePort # no Traefik yet
+configs:
+  params:
+    server.insecure: true
