@@ -75,6 +75,28 @@ graph TB
 	ROUTER -- Ethernet/DHCP --> NODE
 ```
 
+## Troubleshooting
+
+> [!NOTE] On Talos with multiple interfaces (e.g. Tailscale/tunnel + LAN), kubelet may auto-select the tunnel IP as the node InternalIP. When that happens:
+>
+> - kubectl get node shows only the tunnel IP
+> - NodePort services are unreachable on the LAN IP (connection refused)
+> - ClusterIP services still work
+>
+> Fix: explicitly pin the LAN address with `machine.kubelet.extraArgs.node-ip`:
+>
+> ```yaml
+> machine:
+>   network:
+>     interfaces:
+>       - interface: eno1
+>         addresses:
+>           - 192.168.50.200/24
+>   kubelet:
+>     extraArgs:
+>       node-ip: 192.168.50.200
+> ```
+
 ## References
 
 - [Talos documentation](https://www.talos.dev/docs/)
