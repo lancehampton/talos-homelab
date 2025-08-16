@@ -1,0 +1,18 @@
+traefik:
+  deployment:
+    replicas: 1
+  service:
+    type: NodePort
+    spec:
+      externalTrafficPolicy: Cluster
+    ports:
+      web:
+        nodePort: 32080
+      websecure:
+        nodePort: 32443
+  ports:
+    web:
+      redirectTo: websecure
+  ingressRoute:
+    dashboard:
+      enabled: true
