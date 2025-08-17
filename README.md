@@ -20,6 +20,27 @@ This project provisions a Talos-based Kubernetes cluster on bare metal, using Op
 	 tofu apply
 	 ```
 
+5. From the repo root, run the following command to install Argo CD:
+
+```sh
+helm install argocd cluster/apps/argocd/helm \
+  --namespace argocd \
+  --create-namespace \
+  --values cluster/apps/argocd/helm/values.yaml
+```
+
+6. Apply the ArgoCD boostrap application:
+
+```sh
+kubectl apply -f cluster/app-of-apps/bootstrap.yaml
+```
+
+7. Get the initial admin password for Argo CD:
+
+```sh
+kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d
+```
+
 ## Directory Structure
 
 ```

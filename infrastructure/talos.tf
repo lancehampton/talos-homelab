@@ -9,7 +9,6 @@ data "talos_machine_configuration" "controlplane" {
   talos_version    = var.talos_version
   config_patches = [
     file("${path.module}/files/cp-scheduling.yaml"),
-    file("${path.module}/files/cp-networking.yaml"),
     templatefile("${path.module}/files/common.yaml.tpl", {
       hostname      = each.key
       node_ip       = each.value.node_ip
@@ -23,7 +22,6 @@ data "talos_machine_configuration" "controlplane" {
       auth_key = var.tailscale_auth_key
     }),
     templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
-      # Use provider-exposed tunnel token if available in future (coalesce keeps backward compat)
       tunnel_token = var.cloudflared_tunnel_token
     }),
   ]
@@ -51,7 +49,6 @@ data "talos_machine_configuration" "worker" {
       auth_key = var.tailscale_auth_key
     }),
     templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
-      # Use provider-exposed tunnel token if available in future (coalesce keeps backward compat)
       tunnel_token = var.cloudflared_tunnel_token
     }),
   ]

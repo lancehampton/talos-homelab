@@ -5,6 +5,9 @@
 locals {
   protected_apps = { for k, v in var.apps : k => v if v.protected }
 
+  # Deduplicated FQDN for each app
+  app_fqdn = { for k, v in var.apps : k => "${v.subdomain}.${var.domain}" }
+
   # Effective user and admin lists per protected app. App-specific emails override; else fall back to global lists.
   app_user_emails = {
     for name, app in local.protected_apps :
@@ -17,7 +20,7 @@ locals {
 locals {
   tunnel_ingress = [
     for k, v in var.apps : {
-      hostname = "${v.subdomain}.${var.domain}"
+      hostname = local.app_fqdn[k]
       service  = v.service_url
     }
   ]
@@ -40,19 +43,19 @@ locals {
 resource "cloudflare_dns_record" "apps" {
   for_each = var.apps
   zone_id  = var.cloudflare_zone_id
-  name     = each.value.subdomain
+  name     = local.app_fqdn[each.key]
+  ttl      = 1
   type     = "CNAME"
+  comment  = "Tunnel route for ${each.key}"
   content  = local.tunnel_cname
   proxied  = true
-  ttl      = 1
-  comment  = "Tunnel route for ${each.key}"
 }
 
 resource "cloudflare_zero_trust_access_application" "apps" {
   for_each                  = local.protected_apps
   zone_id                   = var.cloudflare_zone_id
   name                      = each.key
-  domain                    = "${each.value.subdomain}.${var.domain}"
+  domain                    = local.app_fqdn[each.key]
   type                      = "self_hosted"
   session_duration          = "24h"
   auto_redirect_to_identity = true
@@ -106,7 +109,7 @@ output "cloudflare_tunnel_id" {
 
 # output "cloudflare_access_protected_apps" {
 #   description = "List of protected app hostnames."
-#   value       = [for k, v in local.protected_apps : "${v.subdomain}.${var.domain}"]
+#   value       = [for k, v in local.protected_apps : local.app_fqdn[k]]
 # }
 
 
