@@ -85,14 +85,14 @@ variable "kubeconfig_path" {
 # https://github.com/siderolabs/extensions/blob/main/network/cloudflared/README.md
 variable "cloudflared_tunnel_token" {
   type        = string
-  description = "Cloudflared token for Talos system extension"
+  description = "Cloudflared token for Talos system extension. Create this in the Cloudflare dashboard."
   sensitive   = true
 }
 
 # https://github.com/siderolabs/extensions/blob/main/network/tailscale/README.md
 variable "tailscale_auth_key" {
   type        = string
-  description = "Tailscale auth key for Talos system extension"
+  description = "Tailscale auth key for Talos system extension. Create a reusable auth key in Tailscale admin console."
   sensitive   = true
 }
 
@@ -103,6 +103,68 @@ variable "tailscale_auth_key" {
 variable "cloudflare_api_token" {
   type        = string
   description = "Account API token for Cloudflare."
+}
+
+variable "cloudflare_account_id" {
+  type        = string
+  description = "Cloudflare account ID owning the zone used for homelab apps."
+}
+
+variable "cloudflare_zone_id" {
+  type        = string
+  description = "Cloudflare zone ID (root DNS zone) for homelab apps."
+}
+
+variable "domain" {
+  type        = string
+  description = "Base domain (e.g. example.com) used for application hostnames."
+}
+
+variable "admin_email" {
+  description = "Primary administrator email used as a fallback Access policy include when an app defines no groups."
+  type        = string
+  validation {
+    condition     = can(regex("^[^@]+@[^@]+\\.[^@]+$", var.admin_email))
+    error_message = "admin_email must be a valid email address."
+  }
+}
+
+
+variable "tunnel_id" {
+  type        = string
+  description = "Existing Cloudflare tunnel UUID (Talos-created). Get it from the Cloudflare dashboard."
+}
+
+variable "apps" {
+  description = <<EOT
+Map of app definitions exposed via Cloudflare Tunnel. Keys are logical app names. Values:
+  subdomain   - left part of FQDN (without base domain)
+  service_url - internal cluster URL cloudflared should connect to (http://svc.namespace.svc.cluster.local:port)
+  protected   - if true create a Cloudflare Access Application + allow policy
+  emails      - optional list of explicit email addresses allowed (overrides global_access_emails if set)
+  groups      - (future) list of Access Group logical names; currently unused
+EOT
+  type = map(object({
+    subdomain   = string
+    service_url = string
+    protected   = bool
+    emails      = optional(list(string), [])
+    groups      = optional(list(string), [])
+  }))
+  default = {}
+}
+
+
+variable "admin_access_emails" {
+  description = "Explicit list of admin user emails granted elevated (admin) access policies for protected apps."
+  type        = list(string)
+  default     = []
+}
+
+variable "user_access_emails" {
+  description = "Explicit list of non-admin user emails granted standard user access policies for protected apps."
+  type        = list(string)
+  default     = []
 }
 
 variable "r2_bucket_name" {

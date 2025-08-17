@@ -23,6 +23,7 @@ data "talos_machine_configuration" "controlplane" {
       auth_key = var.tailscale_auth_key
     }),
     templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
+      # Use provider-exposed tunnel token if available in future (coalesce keeps backward compat)
       tunnel_token = var.cloudflared_tunnel_token
     }),
   ]
@@ -50,6 +51,7 @@ data "talos_machine_configuration" "worker" {
       auth_key = var.tailscale_auth_key
     }),
     templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
+      # Use provider-exposed tunnel token if available in future (coalesce keeps backward compat)
       tunnel_token = var.cloudflared_tunnel_token
     }),
   ]

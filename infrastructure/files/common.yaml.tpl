@@ -11,9 +11,17 @@ machine:
         routes:
           - network: 0.0.0.0/0
             gateway: ${gateway}
+    nameservers:
+      # Use cluster CoreDNS for DNS resolution
+      - 10.96.0.10
+      - 1.1.1.1
+      - 1.0.0.1
   kubelet:
     extraArgs:
       node-ip: ${node_ip}
+  features:
+    hostDNS:
+      enabled: false
 
 cluster:
   network:
