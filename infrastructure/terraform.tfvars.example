@@ -1,33 +1,80 @@
-# Example values for Talos homelab
+#############################
+# Talos Homelab tfvars EXAMPLE
+# Copy to terraform.tfvars and adjust values.
+#############################
 
+# --- Cluster identity ---
 cluster_name     = "talos-homelab"
-cluster_endpoint = "https://10.5.0.2:6443"
+cluster_endpoint = "https://172.31.0.10:6443" # Control plane VIP / first CP node API endpoint (example)
 
-node_data = {
-  controlplanes = {
-    "10.5.0.2" = {
-      install_disk = "/dev/sda"
-      # hostname     = "cp-1" # optional
-    }
-    "10.5.0.3" = {
-      install_disk = "/dev/sda"
-      # hostname     = "cp-2" # optional
-    }
-    "10.5.0.4" = {
-      install_disk = "/dev/sda"
-      # hostname     = "cp-3" # optional
-    }
+# --- Networking ---
+gateway = "172.31.0.1"
+netmask = "24"                       # CIDR suffix for node addresses
+
+# --- Control plane nodes ---
+controlplane_nodes = {
+  "cp-1" = {
+    node_ip      = "172.31.0.10"
+    install_disk = "/dev/nvme0n1"
   }
-  workers = {
-    "10.5.0.5" = {
-      install_disk = "/dev/nvme0n1"
-      hostname     = "worker-1"
-    }
-    "10.5.0.6" = {
-      install_disk = "/dev/nvme0n1"
-      hostname     = "worker-2"
-    }
+  "cp-2" = {
+    node_ip      = "172.31.0.11"
+    install_disk = "/dev/nvme0n1"
+  }
+  "cp-3" = {
+    node_ip      = "172.31.0.12"
+    install_disk = "/dev/nvme0n1"
   }
 }
 
-talos_version = "v1.10.6"
+# --- Worker nodes (optional) ---
+worker_nodes = {
+  # "w-1" = {
+  #   node_ip      = "172.31.0.30"
+  #   install_disk = "/dev/nvme0n1"
+  # }
+}
+
+talos_version    = "v1.10.6"
+talosconfig_path = pathexpand("~/.talos/config")
+kubeconfig_path  = pathexpand("~/.kube/config")
+
+# --- System extensions auth ---
+cloudflared_tunnel_token = "TUNNEL_TOKEN_REDACTED"   # From Cloudflare Zero Trust > Tunnels
+tailscale_auth_key        = "tskey-auth-xxxxxxxx"    # From Tailscale admin console (reusable key)
+
+# --- Cloudflare API / zone ---
+cloudflare_api_token = "cf_api_token_value"          # Scoped token
+cloudflare_account_id = "1234567890abcdef1234567890abcdef"
+cloudflare_zone_id    = "abcdef1234567890abcdef1234567890" # Zone ID for domain below
+domain                = "example.com"
+tunnel_id             = "11111111-2222-3333-4444-555555555555" # Existing tunnel UUID
+
+# --- Access policy emails ---
+admin_email          = "admin@example.com"
+admin_access_emails  = ["admin@example.com"]
+user_access_emails   = ["user1@example.com", "user2@example.com"]
+
+# --- Apps exposed via tunnel ---
+apps = {
+  argocd = {
+    subdomain   = "argocd"
+    service_url = "http://argocd-server.argocd.svc.cluster.local:80" # Example internal Service FQDN
+    protected   = true
+    emails      = []   # optional override list; empty -> falls back to user_access_emails
+  }
+  homepage = {
+    subdomain   = "home"
+    service_url = "http://homepage.homepage.svc.cluster.local:3000"
+    protected   = false
+    emails      = []
+  }
+}
+
+# --- Cloudflare R2 backend (state storage) ---
+r2_bucket_name       = "tf-state-homelab"
+r2_access_key_id     = "R2_ACCESS_KEY_ID"
+r2_secret_access_key = "R2_SECRET_KEY_VALUE"
+r2_endpoint          = "https://<accountid>.r2.cloudflarestorage.com"
+
+# END OF EXAMPLE

@@ -75,26 +75,13 @@ graph TB
 	ROUTER -- Ethernet/DHCP --> NODE
 ```
 
-## Argo CD Management Strategy
+## Argo CD & GitOps
 
-Argo CD itself is currently installed and upgraded with Helm (a single Helm release in the `argocd` namespace). All *other* applications are managed declaratively as Argo CD `Application` resources ("app-of-apps" model). Rationale for keeping Argo CD Helm-managed:
-1. Simpler bootstrap: no chicken-and-egg self‑management during the earliest cluster bring-up.
-2. Easier break‑glass recovery: a failed Git commit cannot remove Argo CD itself; reinstall is one Helm command.
-3. Clear upgrade control: you explicitly `helm upgrade` Argo CD after reviewing release notes.
+Argo CD is installed & upgraded via a single Helm release (`argocd` namespace). Everything else is managed by Argo CD Applications (app-of-apps). Reasons (concise): fast bootstrap, safe recovery, explicit upgrades.
 
-Upgrade paths:
-- Argo CD (Helm managed):
-	- Check chart version diff: `helm repo update && helm search repo argo/argo-cd --versions | head`
-	- Upgrade: `helm upgrade -n argocd argocd argo/argo-cd --version <x.y.z>`
-	- Verify: `kubectl -n argocd rollout status deploy/argocd-server`
-- GitOps apps (Argo CD managed):
-	- Bump chart/app versions in the corresponding Application source (values or chart version) and commit.
-	- Argo CD reconciles automatically (or click Sync). Rollback = `git revert` the commit.
+Recovery: if Argo CD breaks, reinstall the Helm release; Applications resync.
 
-Recovery (break‑glass) note:
-If Argo CD becomes unhealthy, you can reapply it with Helm without touching other workloads, then let GitOps resume.
-
-### GitOps layout & bootstrap
+### Layout & bootstrap
 
 Directory roles (under `cluster/`):
 - `app-of-apps/` Root bootstrap Application + `kustomization.yaml` aggregating all others.
@@ -107,31 +94,22 @@ Bootstrap flow:
 3. The app-of-apps Application syncs and pulls in everything listed in `cluster/app-of-apps/kustomization.yaml`.
 4. Add a new app: commit its manifest under `cluster/apps/` and reference it in the kustomization.
 
-Why Helm for Argo CD (recap):
-| Reason | Benefit |
-| ------ | ------- |
-| Bootstrap simplicity | Avoid self-referential Application early on |
-| Safer experiments | Git mistakes can't delete the controller |
-| Explicit upgrades | Manual `helm upgrade` after review |
+### Upgrades
+Argo CD:
+```
+helm repo update
+helm search repo argo/argo-cd --versions | head
+helm upgrade -n argocd argocd argo/argo-cd --version <x.y.z>
+kubectl -n argocd rollout status deploy/argocd-server
+```
+Other apps: bump chart/image in the Application manifest, commit, push. Roll back with `git revert`.
 
-### Upgrading Argo CD (Helm-managed)
-1. `helm repo update`
-2. Pick version: `helm search repo argo/argo-cd --versions | head`
-3. `helm upgrade -n argocd argocd argo/argo-cd --version <x.y.z>`
-4. `kubectl -n argocd rollout status deploy/argocd-server`
-
-### Upgrading other apps (GitOps-managed)
-- Bump chart version / image tag in the app's manifest.
-- Commit & push; Argo CD reconciles.
-- Roll back with `git revert`.
-
-### Sync ordering (optional)
-Defer sync waves until you have a concrete dependency issue. When needed, annotate specific Application manifests with `argocd.argoproj.io/sync-wave`.
 
 ### Expansion guidance
 - Split into tiers (core / platform / apps) only after app count grows (>8 infra services) to avoid premature complexity.
 - Consider ApplicationSets for pattern generation (multi-env, many similar apps) later.
 - Always pin chart versions; avoid latest tags.
+- Add sync waves only if you encounter ordering issues.
 
 ### Security notes
 - Use AppProjects to restrict allowed repos and destination namespaces (introduce when needed).

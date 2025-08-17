@@ -30,16 +30,16 @@ variable "controlplane_nodes" {
     install_disk = string
   }))
   default = {
-    "thor-cp-01" = {
-      node_ip      = "192.168.50.200"
+    "cp-1" = {
+      node_ip      = "172.31.0.10"
       install_disk = "/dev/nvme0n1"
     }
-    "loki-cp-02" = {
-      node_ip      = "192.168.50.201"
+    "cp-2" = {
+      node_ip      = "172.31.0.11"
       install_disk = "/dev/nvme0n1"
     }
-    "odin-cp-03" = {
-      node_ip      = "192.168.50.202"
+    "cp-3" = {
+      node_ip      = "172.31.0.12"
       install_disk = "/dev/nvme0n1"
     }
     # Add more control plane nodes here as needed
@@ -54,12 +54,12 @@ variable "worker_nodes" {
     install_disk = string
   }))
   default = {
-    "sif-w-01" = {
-      node_ip      = "192.168.50.210"
+    "w-1" = {
+      node_ip      = "172.31.0.30"
       install_disk = "/dev/nvme0n1"
     }
-    "valkyrie-w-02" = {
-      node_ip      = "192.168.50.211"
+    "w-2" = {
+      node_ip      = "172.31.0.31"
       install_disk = "/dev/nvme0n1"
     }
     # Add more worker nodes here
