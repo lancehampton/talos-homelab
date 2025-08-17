@@ -1,9 +1,7 @@
 argo-cd:
   server:
     service:
-      type: NodePort
-      nodePortHttp: 30080
-      nodePortHttps: 30443
+      type: ClusterIP
   configs:
     params:
-      server.insecure: true
+      server.insecure: true # Cloudflare tunnel provides external TLS/Access layer.
