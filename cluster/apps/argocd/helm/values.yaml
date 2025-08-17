@@ -1,7 +1,7 @@
 argo-cd:
   server:
     service:
-      type: NodePort # no Traefik yet
+      type: NodePort
       nodePortHttp: 30080
       nodePortHttps: 30443
   configs:

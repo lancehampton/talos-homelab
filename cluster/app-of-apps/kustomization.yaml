@@ -4,4 +4,4 @@ resources:
   - bootstrap.yaml # self-managed
   - homelab-project.yaml
   - argocd-application.yaml
-  - traefik-application.yaml
+  # - traefik-application.yaml
