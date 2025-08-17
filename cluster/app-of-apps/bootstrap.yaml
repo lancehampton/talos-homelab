@@ -21,4 +21,4 @@ spec:
     syncOptions:
       - CreateNamespace=true
   orphanedResources:
-    enabled: false
+    warn: false
