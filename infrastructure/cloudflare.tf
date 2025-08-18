@@ -54,24 +54,3 @@ resource "cloudflare_zero_trust_access_policy" "apps_access" {
   decision   = "allow"
   include    = [for e in each.value.emails : { email = { email = e } }]
 }
-
-###########
-# Outputs #
-###########
-
-output "cloudflare_tunnel_id" {
-  description = "External tunnel ID (variable supplied)."
-  value       = var.tunnel_id
-}
-
-# output "cloudflare_tunnel_cname" {
-#   description = "Derived CNAME target for the tunnel."
-#   value       = local.tunnel_cname
-# }
-
-# output "cloudflare_access_protected_apps" {
-#   description = "List of protected app hostnames."
-#   value       = [for k, v in local.protected_apps : local.app_fqdn[k]]
-# }
-
-

@@ -101,16 +101,19 @@ variable "kubeconfig_path" {
 ###############
 
 variable "cloudflare_api_token" {
+  sensitive   = true
   type        = string
   description = "Account API token for Cloudflare."
 }
 
 variable "cloudflare_account_id" {
+  sensitive   = true
   type        = string
   description = "Cloudflare account ID owning the zone used for homelab apps."
 }
 
 variable "cloudflare_zone_id" {
+  sensitive   = true
   type        = string
   description = "Cloudflare zone ID (root DNS zone) for homelab apps."
 }
@@ -150,11 +153,13 @@ variable "r2_bucket_name" {
 }
 
 variable "r2_access_key_id" {
+  sensitive   = true
   type        = string
   description = "The access key ID for the R2 bucket."
 }
 
 variable "r2_secret_access_key" {
+  sensitive   = true
   type        = string
   description = "The secret access key for the R2 bucket."
 }

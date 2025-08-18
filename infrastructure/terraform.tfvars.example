@@ -50,15 +50,17 @@ tunnel_id             = "11111111-2222-3333-4444-555555555555" # Existing tunnel
 apps = {
   argocd = {
     subdomain   = "argocd"
-    service_url = "http://argocd-server.argocd.svc.cluster.local:80" # Example internal Service FQDN
+    service_url = "http://argocd-server.argocd.svc.cluster.local:80"
     protected   = true
-    emails      = []   # optional override list; empty -> falls back to user_access_emails
+    emails      = ["you@example.com"]
+    groups      = []
   }
   homepage = {
     subdomain   = "home"
     service_url = "http://homepage.homepage.svc.cluster.local:3000"
     protected   = false
     emails      = []
+    groups      = []
   }
 }
 
