@@ -1,20 +1,18 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: argocd
+  name: cloudflared
   namespace: argocd
 spec:
-  project: homelab
+  project: default
   source:
-    repoURL: https://github.com/lancehampton/talos-homelab.git
+    repoURL: "https://github.com/lancehampton/talos-homelab.git"
     targetRevision: main
-    path: cluster/argocd/helm
+    path: cluster/apps/cloudflared
   destination:
     server: https://kubernetes.default.svc
-    namespace: argocd
+    namespace: cloudflared
   syncPolicy:
     automated:
       prune: true
       selfHeal: true
-    syncOptions:
-      - CreateNamespace=true
