@@ -35,7 +35,6 @@ resource "cloudflare_zero_trust_access_application" "apps" {
   session_duration          = "24h"
   auto_redirect_to_identity = true
 
-  # Ordered policies (first match wins). Admin precedes user.
   policies = [
     { id = cloudflare_zero_trust_access_policy.apps_access[each.key].id },
   ]
@@ -45,8 +44,7 @@ resource "cloudflare_zero_trust_access_application" "apps" {
 resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
   account_id = var.cloudflare_account_id
   tunnel_id  = var.tunnel_id
-  # Remote cloudflared config (object form expected by provider).
-  config = local.tunnel_config
+  config     = local.tunnel_config
 }
 
 resource "cloudflare_zero_trust_access_policy" "apps_access" {

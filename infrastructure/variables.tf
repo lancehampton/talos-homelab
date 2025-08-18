@@ -120,15 +120,6 @@ variable "domain" {
   description = "Base domain (e.g. example.com) used for application hostnames."
 }
 
-variable "admin_email" {
-  description = "Primary administrator email used as a fallback Access policy include when an app defines no groups."
-  type        = string
-  validation {
-    condition     = can(regex("^[^@]+@[^@]+\\.[^@]+$", var.admin_email))
-    error_message = "admin_email must be a valid email address."
-  }
-}
-
 variable "tunnel_id" {
   type        = string
   description = "Existing Cloudflare tunnel UUID. Get it from the Cloudflare dashboard."

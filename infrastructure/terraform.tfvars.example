@@ -46,11 +46,6 @@ cloudflare_zone_id    = "abcdef1234567890abcdef1234567890" # Zone ID for domain 
 domain                = "example.com"
 tunnel_id             = "11111111-2222-3333-4444-555555555555" # Existing tunnel UUID
 
-# --- Access policy emails ---
-admin_email          = "admin@example.com"
-admin_access_emails  = ["admin@example.com"]
-user_access_emails   = ["user1@example.com", "user2@example.com"]
-
 # --- Apps exposed via tunnel ---
 apps = {
   argocd = {
