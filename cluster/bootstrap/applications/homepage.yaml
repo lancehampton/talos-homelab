@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: https://github.com/lancehampton/talos-homelab.git
     targetRevision: main
-  path: cluster/apps/homepage
+  path: applications/homepage
   destination:
     server: https://kubernetes.default.svc
     namespace: homepage

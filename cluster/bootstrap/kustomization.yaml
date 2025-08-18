@@ -1,8 +1,9 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
-  - bootstrap.yaml
+  - applications/bootstrap.yaml # root app-of-apps
   - projects/homelab.yaml
   - applications/argocd.yaml
   - applications/sealed-secrets.yaml
   - applications/cloudflared.yaml
+  # - applications/birdnet.yaml
