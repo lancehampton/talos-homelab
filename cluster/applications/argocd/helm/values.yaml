@@ -1,9 +1,0 @@
-argo-cd:
-  global:
-    domain: argocd.asgardctl.com
-  server:
-    service:
-      type: ClusterIP
-  configs:
-    params:
-      server.insecure: true # Cloudflare tunnel provides external TLS/Access layer.
