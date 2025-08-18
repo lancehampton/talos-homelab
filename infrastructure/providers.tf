@@ -8,6 +8,10 @@ terraform {
       source  = "cloudflare/cloudflare"
       version = "~> 5.8"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = ">= 0.21.1"
+    }
   }
   required_version = ">= 1.6.0"
 
@@ -30,4 +34,9 @@ terraform {
 
 provider "cloudflare" {
   api_token = var.cloudflare_api_token
+}
+
+provider "tailscale" {
+  api_key = var.tailscale_api_key
+  tailnet = var.tailscale_tailnet
 }

@@ -4,4 +4,4 @@ resources:
   - bootstrap.yaml
   - projects/homelab.yaml
   - applications/argocd.yaml
-  - applications/cloudflared.yaml
+  # - applications/cloudflared.yaml

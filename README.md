@@ -25,14 +25,14 @@ tofu apply
 1. Install Argo CD:
 
 ```sh
-kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/stable/manifests/install.yaml
-
+kubectl apply -k cluster/applications/argocd
 ```
 
-2. Apply the app-of-apps boostrap application:
+2. Check the status of the Argo CD components:
 
 ```sh
-kubectl apply -f cluster/bootstrap/bootstrap.yaml
+kubectl -n argocd get pods
+kubectl -n argocd rollout status deploy/argocd-server
 ```
 
 3. Get the initial admin password for Argo CD:
@@ -40,6 +40,22 @@ kubectl apply -f cluster/bootstrap/bootstrap.yaml
 ```sh
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d
 ```
+
+4. Port forward the Argo CD API server:
+
+```sh
+kubectl port-forward svc/argocd-server -n argocd 8080:80
+```
+
+5. Login to the Argo CD UI using the initial admin password obtained earlier.
+
+6. Apply the app-of-apps boostrap application:
+
+```sh
+kubectl apply -k cluster/bootstrap
+```
+
+7. Watch magic happen in Argo CD!
 
 ## Directory Structure
 
@@ -155,7 +171,7 @@ machine:
           - 192.168.50.200/24
   kubelet:
     extraArgs:
-		  node-ip: 192.168.50.200
+      node-ip: 192.168.50.200
 ```
 
 ## References

@@ -39,10 +39,6 @@ talos_version    = "v1.10.6"
 talosconfig_path = pathexpand("~/.talos/config")
 kubeconfig_path  = pathexpand("~/.kube/config")
 
-# --- System extensions auth ---
-cloudflared_tunnel_token = "TUNNEL_TOKEN_REDACTED"   # From Cloudflare Zero Trust > Tunnels
-tailscale_auth_key        = "tskey-auth-xxxxxxxx"    # From Tailscale admin console (reusable key)
-
 # --- Cloudflare API / zone ---
 cloudflare_api_token = "cf_api_token_value"          # Scoped token
 cloudflare_account_id = "1234567890abcdef1234567890abcdef"
@@ -77,4 +73,9 @@ r2_access_key_id     = "R2_ACCESS_KEY_ID"
 r2_secret_access_key = "R2_SECRET_KEY_VALUE"
 r2_endpoint          = "https://<accountid>.r2.cloudflarestorage.com"
 
-# END OF EXAMPLE
+#############
+# Tailscale #
+#############
+
+tailscale_api_key = "your_tailscale_key"
+tailscale_tailnet = "your_tailnet_name"

@@ -82,19 +82,19 @@ variable "kubeconfig_path" {
   type        = string
 }
 
-# https://github.com/siderolabs/extensions/blob/main/network/cloudflared/README.md
-variable "cloudflared_tunnel_token" {
-  type        = string
-  description = "Cloudflared token for Talos system extension. Create this in the Cloudflare dashboard."
-  sensitive   = true
-}
+# # https://github.com/siderolabs/extensions/blob/main/network/cloudflared/README.md
+# variable "cloudflared_tunnel_token" {
+#   type        = string
+#   description = "Cloudflared token for Talos system extension. Create this in the Cloudflare dashboard."
+#   sensitive   = true
+# }
 
-# https://github.com/siderolabs/extensions/blob/main/network/tailscale/README.md
-variable "tailscale_auth_key" {
-  type        = string
-  description = "Tailscale auth key for Talos system extension. Create a reusable auth key in Tailscale admin console."
-  sensitive   = true
-}
+# # https://github.com/siderolabs/extensions/blob/main/network/tailscale/README.md
+# variable "tailscale_auth_key" {
+#   type        = string
+#   description = "Tailscale auth key for Talos system extension. Create a reusable auth key in Tailscale admin console."
+#   sensitive   = true
+# }
 
 ###############
 # Cloudflare  #
@@ -185,4 +185,20 @@ variable "r2_secret_access_key" {
 variable "r2_endpoint" {
   type        = string
   description = "The endpoint for the R2 bucket used for storing Terraform state files."
+}
+
+#############
+# Tailscale #
+#############
+
+variable "tailscale_api_key" {
+  sensitive   = true
+  type        = string
+  description = "API key for Tailscale."
+}
+
+variable "tailscale_tailnet" {
+  sensitive   = true
+  type        = string
+  description = "Tailscale tailnet name."
 }

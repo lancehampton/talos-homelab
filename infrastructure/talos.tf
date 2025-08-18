@@ -19,7 +19,7 @@ data "talos_machine_configuration" "controlplane" {
       installer_url = data.talos_image_factory_urls.this.urls.installer
     }),
     templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
-      auth_key = var.tailscale_auth_key
+      auth_key = tailscale_tailnet_key.this.key
     }),
     # templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
     #   tunnel_token = var.cloudflared_tunnel_token
@@ -46,7 +46,7 @@ data "talos_machine_configuration" "worker" {
       installer_url = data.talos_image_factory_urls.this.urls.installer
     }),
     templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
-      auth_key = var.tailscale_auth_key
+      auth_key = tailscale_tailnet_key.this.key
     }),
     # templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
     #   tunnel_token = var.cloudflared_tunnel_token

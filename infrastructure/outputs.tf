@@ -11,8 +11,3 @@ output "kubeconfig" {
 output "schematic_id" {
   value = talos_image_factory_schematic.this.id
 }
-
-output "tailscale_patch" {
-  sensitive = true
-  value     = templatefile("${path.module}/files/tailscale-config.yaml.tpl", { auth_key = var.tailscale_auth_key })
-}
