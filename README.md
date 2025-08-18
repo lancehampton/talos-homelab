@@ -148,14 +148,14 @@ Fix: explicitly pin the LAN address with `machine.kubelet.extraArgs.node-ip`:
 
 ```yaml
 machine:
-	network:
-		interfaces:
-			- interface: eno1
-				addresses:
-					- 192.168.50.200/24
-	kubelet:
-		extraArgs:
-			node-ip: 192.168.50.200
+  network:
+    interfaces:
+      - interface: eno1
+        addresses:
+          - 192.168.50.200/24
+  kubelet:
+    extraArgs:
+		  node-ip: 192.168.50.200
 ```
 
 ## References
