@@ -129,10 +129,9 @@ variable "admin_email" {
   }
 }
 
-
 variable "tunnel_id" {
   type        = string
-  description = "Existing Cloudflare tunnel UUID (Talos-created). Get it from the Cloudflare dashboard."
+  description = "Existing Cloudflare tunnel UUID. Get it from the Cloudflare dashboard."
 }
 
 variable "apps" {
@@ -152,19 +151,6 @@ EOT
     groups      = optional(list(string), [])
   }))
   default = {}
-}
-
-
-variable "admin_access_emails" {
-  description = "Explicit list of admin user emails granted elevated (admin) access policies for protected apps."
-  type        = list(string)
-  default     = []
-}
-
-variable "user_access_emails" {
-  description = "Explicit list of non-admin user emails granted standard user access policies for protected apps."
-  type        = list(string)
-  default     = []
 }
 
 variable "r2_bucket_name" {

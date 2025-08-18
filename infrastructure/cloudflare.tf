@@ -3,12 +3,10 @@
 ###############################
 
 locals {
-  protected_apps   = { for k, v in var.apps : k => v if v.protected }
-  app_fqdn         = { for k, v in var.apps : k => "${v.subdomain}.${var.domain}" }
-  app_user_emails  = { for name, app in local.protected_apps : name => (length(try(app.emails, [])) > 0 ? app.emails : var.user_access_emails) }
-  app_admin_emails = distinct(concat(var.admin_access_emails, [var.admin_email]))
-  tunnel_cname     = "${var.tunnel_id}.cfargotunnel.com"
-  tunnel_ingress   = [for k, v in var.apps : { hostname = local.app_fqdn[k], service = v.service_url }]
+  protected_apps = { for k, v in var.apps : k => v if v.protected }
+  app_fqdn       = { for k, v in var.apps : k => "${v.subdomain}.${var.domain}" }
+  tunnel_cname   = "${var.tunnel_id}.cfargotunnel.com"
+  tunnel_ingress = [for k, v in var.apps : { hostname = local.app_fqdn[k], service = v.service_url }]
   tunnel_config = {
     ingress = concat(
       [for r in local.tunnel_ingress : { hostname = r.hostname, service = r.service }],
@@ -39,8 +37,7 @@ resource "cloudflare_zero_trust_access_application" "apps" {
 
   # Ordered policies (first match wins). Admin precedes user.
   policies = [
-    { id = cloudflare_zero_trust_access_policy.apps_admin[each.key].id },
-    { id = cloudflare_zero_trust_access_policy.apps_user[each.key].id },
+    { id = cloudflare_zero_trust_access_policy.apps_access[each.key].id },
   ]
 }
 
@@ -52,22 +49,12 @@ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "tunnel" {
   config = local.tunnel_config
 }
 
-resource "cloudflare_zero_trust_access_policy" "apps_user" {
+resource "cloudflare_zero_trust_access_policy" "apps_access" {
   for_each   = local.protected_apps
   account_id = var.cloudflare_account_id
-  name       = "user-${each.key}"
+  name       = "allowed-users"
   decision   = "allow"
-  # Users allowed by email list
-  include = [for e in local.app_user_emails[each.key] : { email = { email = e } }]
-}
-
-resource "cloudflare_zero_trust_access_policy" "apps_admin" {
-  for_each   = local.protected_apps
-  account_id = var.cloudflare_account_id
-  name       = "admin-${each.key}"
-  decision   = "allow"
-  # Admins allowed (higher precedence)
-  include = [for e in local.app_admin_emails : { email = { email = e } }]
+  include    = [for e in each.value.emails : { email = { email = e } }]
 }
 
 ###########
