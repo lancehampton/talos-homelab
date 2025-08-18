@@ -25,7 +25,7 @@ tofu apply
 1. Install Argo CD:
 
 ```sh
-kubectl apply -k cluster/applications/argocd
+kubectl apply -k applications/argocd
 ```
 
 2. Check the status of the Argo CD components:
@@ -130,7 +130,7 @@ Recovery: if Argo CD breaks, re-apply the Kustomize manifest; Applications will 
 
 Argo CD:
 ```
-kubectl apply -k cluster/applications/argocd
+kubectl apply -k applications/argocd
 kubectl -n argocd rollout status deploy/argocd-server
 ```
 Other apps: bump chart/image in the Application manifest, commit, push. Roll back with `git revert`.
@@ -173,6 +173,35 @@ machine:
     extraArgs:
       node-ip: 192.168.50.200
 ```
+
+### Sealed Secrets
+
+Sealed Secrets is a tool for managing sensitive data in Kubernetes. It allows you to encrypt your secrets into a "sealed" format that can be safely stored in version control. The sealed secrets controller then decrypts the sealed secrets at runtime, making the original secret values available to your applications.
+
+Whenever you redeploy the sealed-secrets controller, you need to re-generate the sealed secrets and commit them to the repo. Follow these steps:
+
+1. Create a new `kustomization.yaml` with your new plaintext secret:
+
+```bash
+cat << EOF > kustomization.yaml
+namespace: cloudflared
+secretGenerator:
+- name: tunnel-token
+  literals:
+  - token=<your-tunnel-token>
+generatorOptions:
+  disableNameSuffixHash: true
+EOF
+kubectl kustomize . > secret.yaml
+```
+
+2. Use `kubeseal` to create a Sealed Secret:
+
+```bash
+kubeseal --controller-namespace sealed-secrets --format=yaml < secret.yaml > sealed-secret.yaml
+```
+
+3. Delete `secret.yaml` and commit the `sealed-secret.yaml`.
 
 ## References
 
