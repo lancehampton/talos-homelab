@@ -3,35 +3,12 @@
 ###############################
 
 locals {
-  protected_apps = { for k, v in var.apps : k => v if v.protected }
-
-  # Deduplicated FQDN for each app
-  app_fqdn = { for k, v in var.apps : k => "${v.subdomain}.${var.domain}" }
-
-  # Effective user and admin lists per protected app. App-specific emails override; else fall back to global lists.
-  app_user_emails = {
-    for name, app in local.protected_apps :
-    name => (length(try(app.emails, [])) > 0 ? app.emails : var.user_access_emails)
-  }
+  protected_apps   = { for k, v in var.apps : k => v if v.protected }
+  app_fqdn         = { for k, v in var.apps : k => "${v.subdomain}.${var.domain}" }
+  app_user_emails  = { for name, app in local.protected_apps : name => (length(try(app.emails, [])) > 0 ? app.emails : var.user_access_emails) }
   app_admin_emails = distinct(concat(var.admin_access_emails, [var.admin_email]))
-}
-
-# Build ingress entries for tunnel config from all apps (protected or not)
-locals {
-  tunnel_ingress = [
-    for k, v in var.apps : {
-      hostname = local.app_fqdn[k]
-      service  = v.service_url
-    }
-  ]
-}
-
-## Tunnel is external (Talos-created). Use var.tunnel_id + derived CNAME target.
-locals {
-  tunnel_cname = "${var.tunnel_id}.cfargotunnel.com"
-}
-
-locals {
+  tunnel_cname     = "${var.tunnel_id}.cfargotunnel.com"
+  tunnel_ingress   = [for k, v in var.apps : { hostname = local.app_fqdn[k], service = v.service_url }]
   tunnel_config = {
     ingress = concat(
       [for r in local.tunnel_ingress : { hostname = r.hostname, service = r.service }],

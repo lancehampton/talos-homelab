@@ -21,9 +21,6 @@ data "talos_machine_configuration" "controlplane" {
     templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
       auth_key = tailscale_tailnet_key.this.key
     }),
-    # templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
-    #   tunnel_token = var.cloudflared_tunnel_token
-    # }),
   ]
 }
 
@@ -48,9 +45,6 @@ data "talos_machine_configuration" "worker" {
     templatefile("${path.module}/files/tailscale-config.yaml.tpl", {
       auth_key = tailscale_tailnet_key.this.key
     }),
-    # templatefile("${path.module}/files/cloudflared-config.yaml.tpl", {
-    #   tunnel_token = var.cloudflared_tunnel_token
-    # }),
   ]
 }
 

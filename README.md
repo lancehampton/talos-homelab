@@ -182,3 +182,4 @@ machine:
 - [Kubernetes documentation](https://kubernetes.io/docs/)
 - [Cloudflared System Extension](https://github.com/siderolabs/extensions/blob/main/network/cloudflared/README.md)
 - [Tailscale System Extension](https://github.com/siderolabs/extensions/blob/main/network/tailscale/README.md)
+- [Managing secrets deployment in Kubernetes using Sealed Secrets](https://aws.amazon.com/blogs/opensource/managing-secrets-deployment-in-kubernetes-using-sealed-secrets/)
