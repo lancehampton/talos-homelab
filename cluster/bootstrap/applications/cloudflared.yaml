@@ -8,7 +8,7 @@ spec:
   source:
     repoURL: "https://github.com/lancehampton/talos-homelab.git"
     targetRevision: main
-    path: cluster/apps/cloudflared
+    path: cluster/applications/cloudflared
   destination:
     server: https://kubernetes.default.svc
     namespace: cloudflared
@@ -16,3 +16,5 @@ spec:
     automated:
       prune: true
       selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

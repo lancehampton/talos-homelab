@@ -5,4 +5,4 @@ resources:
   - projects/homelab.yaml
   - applications/argocd.yaml
   - applications/sealed-secrets.yaml
-  # - applications/cloudflared.yaml
+  - applications/cloudflared.yaml
