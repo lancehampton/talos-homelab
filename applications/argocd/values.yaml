@@ -1,10 +1,13 @@
-configs:
-  params:
-    "server.insecure": true
-
 server:
   service:
     type: ClusterIP
+
+configs:
+  params:
+    server.insecure: true
+
+admin:
+  username: lance
 
 crds:
   keep: false
