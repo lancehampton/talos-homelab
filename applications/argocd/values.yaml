@@ -11,8 +11,5 @@ argo-cd:
     params:
       server.insecure: true
 
-  admin:
-    username: lance
-
   crds:
     keep: false
