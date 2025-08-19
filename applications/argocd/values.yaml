@@ -1,3 +1,6 @@
+global:
+  domain: argocd.asgardctl.com
+
 configs:
   params:
     server.insecure: true
