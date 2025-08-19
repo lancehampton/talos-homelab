@@ -198,10 +198,14 @@ kubectl kustomize . > secret.yaml
 2. Use `kubeseal` to create a Sealed Secret:
 
 ```bash
-kubeseal --controller-namespace sealed-secrets --format=yaml < secret.yaml > sealed-secret.yaml
+kubeseal \
+  --controller-namespace kubeseal \
+  --controller-name sealed-secrets \
+  --format=yaml \
+  < secret.yaml > sealed-secret.yaml
 ```
 
-3. Delete `secret.yaml` and commit the `sealed-secret.yaml`.
+3. Delete `secret.yaml`, move `sealed-secret.yaml` to the appropriate directory, and commit the `sealed-secret.yaml`.
 
 ## References
 

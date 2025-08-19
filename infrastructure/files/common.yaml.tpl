@@ -15,8 +15,9 @@ machine:
       - 1.1.1.1
       - 8.8.8.8
   kubelet:
-    extraArgs:
-      node-ip: ${node_ip}
+    nodeIP:
+      validSubnets:
+        - ${node_ip}/${netmask}
 
 cluster:
   network:
@@ -24,3 +25,6 @@ cluster:
       - 10.244.0.0/16
     serviceSubnets:
       - 10.96.0.0/12
+  etcd:
+    advertisedSubnets:
+      - ${node_ip}/${netmask}

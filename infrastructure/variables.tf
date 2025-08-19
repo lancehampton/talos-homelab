@@ -153,13 +153,13 @@ variable "r2_bucket_name" {
 }
 
 variable "r2_access_key_id" {
-  sensitive   = true
+  # sensitive   = true
   type        = string
   description = "The access key ID for the R2 bucket."
 }
 
 variable "r2_secret_access_key" {
-  sensitive   = true
+  # sensitive   = true
   type        = string
   description = "The secret access key for the R2 bucket."
 }

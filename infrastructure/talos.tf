@@ -127,3 +127,17 @@ resource "local_file" "kubeconfig" {
   filename        = var.kubeconfig_path
   file_permission = "0644"
 }
+
+# Used as a dependency before running other operations on the cluste
+data "talos_cluster_health" "this" {
+  depends_on = [
+    talos_machine_configuration_apply.controlplane,
+    talos_machine_configuration_apply.worker,
+    talos_cluster_kubeconfig.this
+  ]
+
+  client_configuration = talos_machine_secrets.this.client_configuration
+  endpoints            = [for k, v in var.controlplane_nodes : v.node_ip]
+  control_plane_nodes  = [for k, v in var.controlplane_nodes : v.node_ip]
+  worker_nodes         = [for k, v in var.worker_nodes : v.node_ip]
+}

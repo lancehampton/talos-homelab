@@ -1,0 +1,10 @@
+apiVersion: v2
+name: argocd-wrapper
+description: Wrapper chart to deploy upstream argo-cd with local values
+version: 0.1.0
+appVersion: "3.1.0"
+
+dependencies:
+  - name: argo-cd
+    version: "8.3.0"
+    repository: "https://argoproj.github.io/argo-helm"

@@ -12,6 +12,10 @@ terraform {
       source  = "tailscale/tailscale"
       version = ">= 0.21.1"
     }
+    helm = {
+      source  = "hashicorp/helm"
+      version = ">= 3.0.2"
+    }
   }
   required_version = ">= 1.6.0"
 
@@ -39,4 +43,10 @@ provider "cloudflare" {
 provider "tailscale" {
   api_key = var.tailscale_api_key
   tailnet = var.tailscale_tailnet
+}
+
+provider "helm" {
+  kubernetes = {
+    config_path = var.kubeconfig_path
+  }
 }
