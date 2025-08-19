@@ -6,7 +6,7 @@ metadata:
 spec:
   project: homelab
   source:
-    repoURL: https://github.com/lancehampton/talos-homelab
+    repoURL: https://github.com/lancehampton/talos-homelab.git
     path: applications/argocd
     targetRevision: main
     helm:

@@ -6,7 +6,7 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: "https://github.com/lancehampton/talos-homelab.git"
+    repoURL: https://github.com/lancehampton/talos-homelab.git
     targetRevision: main
     path: applications/cloudflared
   destination:
