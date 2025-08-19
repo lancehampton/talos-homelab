@@ -1,12 +1,23 @@
+resource "kubernetes_namespace" "argocd" {
+  metadata {
+    name = "argocd"
+  }
+}
+
 resource "helm_release" "argocd" {
   depends_on = [data.talos_cluster_health.this]
 
   name              = "argocd"
   chart             = "${path.module}/../applications/argocd"
-  namespace         = "argocd"
-  create_namespace  = true
+  namespace         = kubernetes_namespace.argocd.metadata[0].name
   values            = [file("../applications/argocd/values.yaml")]
   dependency_update = true
+}
+
+resource "kubernetes_namespace" "sealed_secrets" {
+  metadata {
+    name = "kubeseal"
+  }
 }
 
 resource "helm_release" "sealed_secrets" {
@@ -14,8 +25,7 @@ resource "helm_release" "sealed_secrets" {
 
   name              = "sealed-secrets"
   chart             = "${path.module}/../applications/sealed-secrets"
-  namespace         = "kubeseal"
-  create_namespace  = true
+  namespace         = kubernetes_namespace.sealed_secrets.metadata[0].name
   values            = [file("../applications/sealed-secrets/values.yaml")]
   dependency_update = true
 }
