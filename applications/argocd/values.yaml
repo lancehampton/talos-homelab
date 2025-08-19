@@ -1,5 +1,8 @@
+# Because this is a wrapper chart, all values must be nested under the dependency chart name ("argo-cd")
 argo-cd:
-  # Because this is a wrapper chart, all values must be nested under the dependency chart name ("argo-cd")
+  global:
+    domain: argocd.asgardctl.com
+
   server:
     service:
       type: ClusterIP
