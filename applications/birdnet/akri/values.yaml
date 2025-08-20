@@ -1,0 +1,4 @@
+# Because this is a wrapper chart, all values must be nested under the dependency chart name
+akri:
+  webhookConfiguration:
+    enabled: false

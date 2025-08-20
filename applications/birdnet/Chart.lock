@@ -1,9 +1,0 @@
-dependencies:
-- name: birdnet-go
-  repository: https://iszumpo.github.io/birdnet-go-charts/
-  version: 0.1.1
-- name: akri
-  repository: https://project-akri.github.io/akri/
-  version: 0.12.20
-digest: sha256:b9796ff4ac7b12586cd5dfeaba2ade39fbb643cd3f092b25ab28342aa3add746
-generated: "2025-08-20T12:29:33.062236-04:00"

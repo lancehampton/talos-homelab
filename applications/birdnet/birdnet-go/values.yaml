@@ -1,8 +1,6 @@
 # Because this is a wrapper chart, all values must be nested under the dependency chart name ("birdnet-go")
 birdnet-go:
   replicaCount: 1
-  # akri:
-  #   install: true
   birdnet:
     image: ghcr.io/tphakala/birdnet-go:0.5.5
     service:
@@ -27,7 +25,3 @@ birdnet-go:
     - name: lavmic
       udevRules:
         - 'ATTRS{idProduct}=="0022", ATTRS{idVendor}=="31b2"'
-
-akri:
-  webhookConfiguration:
-    enabled: false

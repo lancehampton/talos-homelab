@@ -1,0 +1,10 @@
+apiVersion: v2
+name: akri-wrapper
+description: Wrapper chart to deploy upstream akri with local values
+version: 0.1.0
+appVersion: "0.12.20"
+
+dependencies:
+  - name: akri
+    version: "0.12.20"
+    repository: https://project-akri.github.io/akri/
