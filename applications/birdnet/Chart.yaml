@@ -1,0 +1,10 @@
+apiVersion: v2
+name: birdnet-wrapper
+description: Wrapper chart to deploy upstream birdnet with local values
+version: 0.1.0
+appVersion: "nightly" # based on tphakala/birdnet-go image tag
+
+dependencies:
+  - name: birdnet-go
+    version: "0.1.1"
+    repository: https://iszumpo.github.io/birdnet-go-charts/

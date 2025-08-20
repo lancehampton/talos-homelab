@@ -1,0 +1,29 @@
+# Because this is a wrapper chart, all values must be nested under the dependency chart name ("birdnet")
+birdnet:
+  replicaCount: 1
+  akri:
+    install: true
+  birdnet:
+    image: "ghcr.io/tphakala/birdnet-go:nightly"
+    service:
+      type: ClusterIP
+      port: 80
+    # ingress:
+    #   enabled: false
+    #   hosts:
+    #     - host: birdnet.local
+    #       paths:
+    #         - path: /
+    #           pathType: ImplementationSpecific
+    #   annotations: {}
+    # persistentVolumeClaim:
+    #   enabled: true
+    #   size: "500Mi"
+    #   accessModes:
+    #     - ReadWriteOnce
+    # config: {}
+  timezone: "America/New_York"
+  microphones:
+    - name: lavmic
+      udevRules:
+        - 'ATTRS{idProduct}=="0022", ATTRS{idVendor}=="31b2"'
