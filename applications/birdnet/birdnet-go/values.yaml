@@ -20,8 +20,8 @@ birdnet-go:
     #   accessModes:
     #     - ReadWriteOnce
     # config: {}
-  timezone: "America/New_York"
+  timezone: America/New_York
   microphones:
     - name: lavmic
       udevRules:
-        - 'ATTRS{idProduct}=="0022", ATTRS{idVendor}=="31b2"'
+        - ATTRS{idProduct}=="0022", ATTRS{idVendor}=="31b2"
