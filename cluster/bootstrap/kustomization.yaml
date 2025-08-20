@@ -6,4 +6,4 @@ resources:
   - applications/argocd.yaml
   - applications/sealed-secrets.yaml
   - applications/cloudflared.yaml
-  # - applications/birdnet.yaml
+  - applications/birdnet.yaml
