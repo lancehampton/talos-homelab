@@ -1,8 +1,8 @@
 # Because this is a wrapper chart, all values must be nested under the dependency chart name ("birdnet")
 birdnet:
   replicaCount: 1
-  akri:
-    install: true
+  # akri:
+  #   install: true
   birdnet:
     image: "ghcr.io/tphakala/birdnet-go:nightly"
     service:
