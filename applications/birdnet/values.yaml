@@ -27,3 +27,7 @@ birdnet-go:
     - name: lavmic
       udevRules:
         - 'ATTRS{idProduct}=="0022", ATTRS{idVendor}=="31b2"'
+
+akri:
+  webhookConfiguration:
+    enabled: false
