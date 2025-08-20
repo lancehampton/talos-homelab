@@ -9,5 +9,5 @@ dependencies:
     version: "0.1.1"
     repository: https://iszumpo.github.io/birdnet-go-charts/
   - name: akri
-    version: 0.12.20
+    version: "0.12.20"
     repository: https://project-akri.github.io/akri/
