@@ -4,7 +4,7 @@ birdnet-go:
   # akri:
   #   install: true
   birdnet:
-    image: "ghcr.io/tphakala/birdnet-go:nightly"
+    image: ghcr.io/tphakala/birdnet-go:0.5.5
     service:
       type: ClusterIP
       port: 80
