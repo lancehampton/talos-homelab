@@ -4,7 +4,7 @@ metadata:
   name: birdnet
   namespace: argocd
 spec:
-  project: default
+  project: homelab
   source:
     repoURL: https://github.com/lancehampton/talos-homelab.git
     path: applications/birdnet
