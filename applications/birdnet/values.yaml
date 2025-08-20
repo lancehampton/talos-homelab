@@ -1,5 +1,5 @@
-# Because this is a wrapper chart, all values must be nested under the dependency chart name ("birdnet")
-birdnet:
+# Because this is a wrapper chart, all values must be nested under the dependency chart name ("birdnet-go")
+birdnet-go:
   replicaCount: 1
   # akri:
   #   install: true
