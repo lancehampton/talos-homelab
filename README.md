@@ -10,8 +10,8 @@ This project provisions a Talos-based Kubernetes cluster on bare metal, using Op
 
 1. Clone this repository.
 2. Copy and edit `infrastructure/terraform.tfvars.example` to `terraform.tfvars` with your environment details.
-3. Boot the Talos nodes using the `metal-amd64.iso` downloaded from the [image factory](https://factory.talos.dev/) or the [siderolabs/talos releases page](https://github.com/siderolabs/talos/releases)
-4. Initialize and apply the OpenTofu configuration:
+3. Boot the Talos nodes using the `metal-amd64.iso` downloaded from the [image factory](https://factory.talos.dev/) or the [siderolabs/talos releases page](https://github.com/siderolabs/talos/releases).
+4. Initialize and apply the OpenTofu configuration (this also installs Argo CD and Sealed Secrets via Helm releases defined in `infrastructure/`):
 
 ```sh
 cd infrastructure
@@ -22,45 +22,50 @@ tofu apply
 
 ### Post Installation
 
-1. Install Argo CD:
+After `tofu apply` the Helm releases for Argo CD and the Sealed Secrets controller should be present. Use the following steps to verify and finish bootstrapping the GitOps workflow.
 
-```sh
-kubectl apply -k applications/argocd
-```
-
-2. Check the status of the Argo CD components:
+1. Verify Argo CD pods are running (and the namespace matches your `infrastructure` configuration):
 
 ```sh
 kubectl -n argocd get pods
 kubectl -n argocd rollout status deploy/argocd-server
 ```
 
-3. Get the initial admin password for Argo CD:
+2. Retrieve the initial Argo CD admin password (same secret name as standard chart installs):
 
 ```sh
 kubectl get secret argocd-initial-admin-secret -n argocd -o jsonpath='{.data.password}' | base64 -d
 ```
 
-4. Port forward the Argo CD API server:
+3. Port-forward the Argo CD API server to access the UI locally:
 
 ```sh
 kubectl port-forward svc/argocd-server -n argocd 8080:80
 ```
 
-5. Login to the Argo CD UI using the initial admin password obtained earlier.
-
-6. Apply the app-of-apps boostrap application:
+4. Apply the repository root app-of-apps so Argo CD takes over managing cluster applications:
 
 ```sh
 kubectl apply -k cluster/bootstrap
 ```
 
-7. Watch magic happen in Argo CD!
+5. Optionally verify the Sealed Secrets controller (namespace may vary; check your `infrastructure` Helm release):
+
+```sh
+kubectl -n sealed-secrets get pods || kubectl -n kubeseal get pods
+```
+
+6. Login to the Argo CD UI using the initial admin password and watch your Applications sync.
+
+Notes:
+- If Argo CD or Sealed Secrets are installed to different namespaces in your OpenTofu manifests, substitute the correct namespace when running the commands above.
+- For recovery, re-run `tofu apply` to restore the Helm releases and re-apply `kubectl apply -k cluster/bootstrap` if needed; Argo CD will then resync managed Applications.
 
 ## Directory Structure
 
 ```sh
 infrastructure/
+├── bootstrap.tf             # Initial Helm release configuration
 ├── cloudflare.tf            # Cloudflare resource configuration
 ├── outputs.tf               # Output values (e.g., kubeconfig)
 ├── providers.tf             # Provider and OpenTofu version constraints
@@ -122,32 +127,23 @@ graph TB
 
 ## Argo CD & GitOps
 
-Argo CD is installed and upgraded using Kustomize (`argocd` namespace). All other workloads are managed by Argo CD Applications (app-of-apps pattern). This approach enables fast bootstrap, safe recovery, and explicit upgrades.
+Argo CD and Sealed Secrets are now bootstrapped by OpenTofu (see the Helm release resources in `infrastructure/`). After running your OpenTofu apply (for example `tofu apply` in `infrastructure/`), the Helm releases install Argo CD and the Sealed Secrets controller.
 
-Recovery: if Argo CD breaks, re-apply the Kustomize manifest; Applications will resync automatically.
+Once the Helm releases are present, apply the repository's root app-of-apps (the Kustomize bootstrap) so Argo CD takes over managing the rest of the applications:
 
-### Upgrades
-
-Argo CD:
 ```
-kubectl apply -k applications/argocd
-kubectl -n argocd rollout status deploy/argocd-server
+kubectl apply -k cluster/bootstrap
 ```
-Other apps: bump chart/image in the Application manifest, commit, push. Roll back with `git revert`.
+
+Notes:
+- You no longer need to manually install Argo CD with `kubectl apply -k applications/argocd` — it's installed by OpenTofu Helm releases.
+- Recovery: if Argo CD becomes unavailable, re-run the OpenTofu apply to restore the Helm releases, then re-apply the bootstrap Kustomize if necessary; Argo CD will resync managed Applications.
 
 ### Expansion guidance
 - Split into tiers (core / platform / apps) only after app count grows (>8 infra services) to avoid premature complexity.
 - Consider ApplicationSets for pattern generation (multi-env, many similar apps) later.
 - Always pin chart versions; avoid latest tags.
 - Add sync waves only if you encounter ordering issues.
-
-### Security notes
-- Use AppProjects to restrict allowed repos and destination namespaces (introduce when needed).
-- Plan secret management (External Secrets, SOPS, Sealed Secrets) for sensitive values.
-
-### Next steps (roadmap)
-- Add Traefik / cert-manager / external-dns / monitoring stack as new Application manifests.
-- Introduce secret management solution (e.g. SOPS, Sealed Secrets).
 
 ## Troubleshooting
 
