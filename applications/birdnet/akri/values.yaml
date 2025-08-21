@@ -2,7 +2,3 @@
 akri:
   webhookConfiguration:
     enabled: false
-
-  agent:
-    securityContext:
-      allowPrivilegeEscalation: true
